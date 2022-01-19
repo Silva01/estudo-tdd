@@ -65,6 +65,12 @@ public class PessoaControllerTest {
                 .andExpect(content().json(json));
     }
 
+    @Test
+    public void deveDeletarPessoa() throws Exception {
+        mock.perform(delete("/pessoa/{id}", 1))
+                .andExpect(status().is(200));
+    }
+
     private String convertToJson(Object obj) throws JsonProcessingException {
         return new ObjectMapper().writer().withDefaultPrettyPrinter().writeValueAsString(obj);
     }
