@@ -29,6 +29,7 @@ public class PessoaServiceImpl implements PessoaService{
 
     @Override
     public void remove(Long id) {
-        repository.delete(repository.getById(id));
+        if (repository.existsById(id))
+            repository.deleteById(id);
     }
 }
