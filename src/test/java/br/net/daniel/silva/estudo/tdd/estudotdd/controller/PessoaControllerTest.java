@@ -4,19 +4,22 @@ import br.net.daniel.silva.estudo.tdd.estudotdd.models.Pessoa;
 import br.net.daniel.silva.estudo.tdd.estudotdd.services.PessoaService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.Collections;
 import java.util.List;
+
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = PessoaController.class)
 public class PessoaControllerTest {
@@ -32,19 +35,37 @@ public class PessoaControllerTest {
         Pessoa pessoa = new Pessoa("Daniel", 32);
         pessoa.setId(1L);
 
-        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-        String mockPessoasJson = ow.writeValueAsString(pessoa);
+        String mockPessoasJson = convertToJson(pessoa);
 
-        Mockito.when(service.create(Mockito.any(Pessoa.class))).thenReturn(pessoa);
+        when(service.create(any(Pessoa.class))).thenReturn(pessoa);
 
         mock.perform(
-                    MockMvcRequestBuilders.post("/pessoa")
+                    post("/pessoa")
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON)
                     .content(mockPessoasJson))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json(mockPessoasJson));
+                .andExpect(status().isOk())
+                .andExpect(content().json(mockPessoasJson));
 
-        Mockito.verify(service).create(Mockito.any(Pessoa.class));
+        verify(service).create(any(Pessoa.class));
+    }
+
+    @Test
+    public void deveListarPessoas() throws Exception {
+        Pessoa pessoa = new Pessoa("Daniel", 32);
+        pessoa.setId(1L);
+
+        List<Pessoa> mockPessoas = Collections.singletonList(pessoa);
+        String json = convertToJson(mockPessoas);
+
+        when(service.findAll()).thenReturn(mockPessoas);
+
+        mock.perform(get("/pessoa").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is(200))
+                .andExpect(content().json(json));
+    }
+
+    private String convertToJson(Object obj) throws JsonProcessingException {
+        return new ObjectMapper().writer().withDefaultPrettyPrinter().writeValueAsString(obj);
     }
 }
