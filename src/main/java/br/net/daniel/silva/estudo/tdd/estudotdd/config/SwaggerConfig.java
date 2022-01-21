@@ -1,4 +1,4 @@
-package br.net.daniel.silva.estudo.tdd.estudotdd;
+package br.net.daniel.silva.estudo.tdd.estudotdd.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
