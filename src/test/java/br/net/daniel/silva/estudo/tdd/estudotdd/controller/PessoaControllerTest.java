@@ -63,12 +63,16 @@ public class PessoaControllerTest {
         mock.perform(get("/pessoa").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(200))
                 .andExpect(content().json(json));
+
+        verify(service).findAll();
     }
 
     @Test
     public void deveDeletarPessoa() throws Exception {
         mock.perform(delete("/pessoa/{id}", 1))
                 .andExpect(status().is(200));
+
+        verify(service).remove(any(Long.class));
     }
 
     private String convertToJson(Object obj) throws JsonProcessingException {

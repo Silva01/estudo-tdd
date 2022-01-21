@@ -28,7 +28,7 @@ public class PessoaController {
         return service.create(pessoa);
     }
 
-    @ApiOperation(value = "API para Listar Pessoas", consumes = "application/json")
+    @ApiOperation(value = "API para Listar Pessoas")
     @GetMapping
     public List<Pessoa> findAll() {
         return service.findAll();
